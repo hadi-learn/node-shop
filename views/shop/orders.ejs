@@ -1,0 +1,91 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href="/css/product.css">
+  <link rel="stylesheet" href="/css/order.css">
+  </head>
+
+  <body>
+    <%- include('../includes/navigation.ejs') %>
+
+      <main class="order-page">
+        <% if (orders.length> 0) { %>
+          <% let totalGrandPrice=0 %>
+            <% orders.forEach((order, index1)=> { %>
+              <div class="order">
+                <div class="order-info">
+                  <h2 class="order-info__id">
+                    Order Id: <%= order._id %>
+                  </h2>
+                  <div class="order-owner">
+                    <p class="order-owner__item">
+                      <% const orderDate=order.createdAt.toLocaleString() %>
+                        <span>Order date: </span>
+                        <%= orderDate %>
+                    </p>
+                    <p class="order-owner__item">
+                      <span>User: </span>
+                      <%= order.user.email %>
+                    </p>
+
+                  </div>
+                </div>
+                <div class="order-info__item-list">
+                  <% let totalPrice=0 %>
+                    <% order.products.forEach((product, index2)=> { %>
+                      <% let itemPrice=0 %>
+                        <% itemPrice=itemPrice + product.productData.price * product.quantity %>
+                          <% totalPrice=totalPrice + product.productData.price * product.quantity %>
+                            <% totalGrandPrice=totalGrandPrice + product.productData.price * product.quantity %>
+                              <div class="order-info__item">
+                                <div class="order-info__item-image-holder">
+                                  <div class="order-info__image-container">
+                                    <img class="order-info__item-image" src=<%=product.productData.imageUrl + '?random='
+                                      + index1.toString() + index2.toString() %> alt=<%= product.productData.title %>>
+                                  </div>
+                                </div>
+                                <div class="order-info__info-container">
+                                  <div class="order-info__item-info">
+                                    <h4 class="order-info__item-title">
+                                      <%= product.productData.title %>
+                                    </h4>
+                                    <p>
+                                      Price: $<%= product.productData.price %>
+                                    </p>
+                                  </div>
+                                  <div class="order-info__item-order">
+                                    <h4 class="order-info__item-total-price">$<%= itemPrice.toFixed(2) %>
+                                    </h4>
+                                    <p>
+                                      Qty: <%= product.quantity %>
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                              <% }) %>
+                </div>
+                <div class="total">
+                  <h3>
+                    Total Price:
+                  </h3>
+                  <h3 class="total-price">
+                    $<%= totalPrice.toFixed(2) %>
+                  </h3>
+                </div>
+              </div>
+              <% }) %>
+                <div class="grand-total">
+                  <h1>
+                    Grand Total Price:
+                  </h1>
+                  <h1 class="grand-total-price">
+                    $<%= totalGrandPrice.toFixed(2) %>
+                  </h1>
+                </div>
+                <% } else if (currentUser) { %>
+                  <h1 class="empty">Nothing here yet, check your cart</h1>
+                  <% } else { %>
+                    <h1 class="empty">Please Login</h1>
+                    <% } %>
+      </main>
+
+      <%- include('../includes/end.ejs') %>
+  </body>

@@ -1,0 +1,40 @@
+<%- include('../includes/head.ejs') %>
+  <link rel="stylesheet" href="/css/product.css">
+  </head>
+
+  <body>
+    <%- include('../includes/navigation.ejs') %>
+
+      <main class="cart-page">
+        <% if (products.length> 0) { %>
+          <div class="cart-item-list">
+            <% products.forEach(product=> { %>
+              <div class="cart-item">
+                <p class="item-title">
+                  <%= product.productId.title %>
+                </p>
+                <p class="item-quantity">
+                  Quantity: (<%= product.quantity %>)
+                </p>
+                <form action="/cart-delete-item" method="POST">
+                  <input type="hidden" value="<%= csrfToken %>" name="_csrf">
+                  <input type="hidden" name="productId" value="<%= product.productId._id %>">
+                  <button class="btn" type="submit">Delete</button>
+                </form>
+              </div>
+              <% }) %>
+          </div>
+          <div class="order">
+            <form action="/orders" method="POST">
+              <input type="hidden" value="<%= csrfToken %>" name="_csrf">
+              <button class="edit" type="submit">Order Now</button>
+            </form>
+          </div>
+          <% } else if (currentUser) { %>
+            <h1>No product found!</h1>
+            <% } else { %>
+              <h1>Please Login </h1>
+              <% } %>
+      </main>
+
+      <%- include('../includes/end.ejs') %>

@@ -1,0 +1,71 @@
+.centered,
+.product-form,
+.login-form {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+    display: block;
+}
+
+.user-message {
+    width: 20rem;
+    max-width: 90%;
+    margin: auto;
+    display: block;
+    padding: 0.5rem;
+    color: blue;
+    background-color: rgb(223, 247, 255);
+    border: 1px solid rgb(37, 139, 255);
+    border-radius: 3px;
+    text-align: center;
+}
+
+.user-message--error {
+    color: #ff0000;
+    background-color: rgb(255, 233, 233);
+    border: 1px solid rgb(255, 46, 46);
+}
+
+.form-control {
+    margin: 1rem 0;
+}
+
+.form-control label,
+.form-control input,
+.form-control textarea {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.25rem;
+}
+
+.form-control input,
+.form-control textarea {
+    border: 1px solid #a1a1a1;
+    font: inherit;
+    border-radius: 2px;
+}
+
+.form-control input:focus,
+.form-control textarea:focus {
+    outline-color: #00695c;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.reset_password {
+    margin-top: 25px;
+}
+
+.reset_password p {
+    color: rgb(168, 168, 168);
+    font-size: 0.8rem;
+    margin-bottom: 5px;
+}
+
+.verify-email {
+    text-align: center;
+}
