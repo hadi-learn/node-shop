@@ -13,35 +13,28 @@ exports.getLogin = (req, res, next) => {
     pageTitle: 'Login',
     path: '/login',
     errorMessage: req.flash('error')[0],
-    successMessage: message
+    successMessage: message,
+    lastInputValue: null,
+    validationErrors: []
   })
 }
 
 exports.postLogin = (req, res, next) => {
   const { email, password } = req.body
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    console.log(errors)
+    return res.status(422).render('auth/login', {
+      pageTitle: 'Login',
+      path: '/login',
+      errorMessage: errors.array()[0].msg,
+      successMessage: req.flash('success')[0],
+      lastInputValue: { email: email, password: password },
+      validationErrors: errors.array()
+    })
+  }
   User.findOne({ email: email })
     .then(user => {
-      if (!user) {
-        return Promise.resolve(req.flash('error', 'Invalid email'))
-          .then(result => {
-            return req.session.save(err => {
-              if (err) {
-                console.log(err)
-              }
-              res.redirect('/login')
-            })
-            // .catch(err => {
-            //   if (err) {
-            //     console.log(err)
-            //   }
-            // })
-          })
-          .catch(err => {
-            if (err) {
-              console.log(err)
-            }
-          })
-      }
       bcrypt.compare(password, user.password)
         .then(compareResult => {
           if (compareResult) {
@@ -54,37 +47,25 @@ exports.postLogin = (req, res, next) => {
               res.redirect('/')
             })
           }
-          return Promise.resolve(req.flash('error', 'Invalid password'))
-            .then(result => {
-              return req.session.save(err => {
-                if (err) {
-                  console.log(err)
-                }
-                res.redirect('/login')
-              })
-            })
-            .catch(err => {
-              if (err) {
-                console.log(err)
-              }
-            })
+          return res.status(422).render('auth/login', {
+            pageTitle: 'Login',
+            path: '/login',
+            errorMessage: 'Invalid Password',
+            successMessage: null,
+            lastInputValue: { email: email, password: password },
+            validationErrors: []
+          })
         })
         .catch(err => {
           if (err) {
-            return Promise.resolve(req.flash('error', err))
-              .then(result => {
-                return req.session.save(err => {
-                  if (err) {
-                    console.log(err)
-                  }
-                  res.redirect('/login')
-                })
-              })
-              .catch(err => {
-                if (err) {
-                  console.log(err)
-                }
-              })
+            return res.status(422).render('auth/login', {
+              pageTitle: 'Login',
+              path: '/login',
+              errorMessage: err,
+              successMessage: null,
+              lastInputValue: { email: email, password: password },
+              validationErrors: []
+            })
           }
         })
     })
@@ -98,12 +79,14 @@ exports.getSignup = (req, res, next) => {
     pageTitle: 'Signup',
     path: '/signup',
     errorMessage: req.flash('error')[0],
-    successMessage: req.flash('success')[0]
+    successMessage: req.flash('success')[0],
+    lastInputValue: null,
+    validationErrors: []
   })
 }
 
 exports.postSignup = (req, res, next) => {
-  const { email, password, confirmPassword } = req.body
+  const { email, password } = req.body
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     console.log(errors)
@@ -111,57 +94,56 @@ exports.postSignup = (req, res, next) => {
       pageTitle: 'Signup',
       path: '/signup',
       errorMessage: errors.array()[0].msg,
-      successMessage: req.flash('success')[0]
+      successMessage: req.flash('success')[0],
+      lastInputValue: { email: email, password: password, confirmPassword: req.body.confirmPassword },
+      validationErrors: errors.array()
     })
   }
-  User.findOne({ email: email })
+  bcrypt
+    .hash(password, 12)
+    .then(hashedPassword => {
+      const user = new User({
+        email: email,
+        password: hashedPassword,
+        cart: {
+          items: []
+        }
+      })
+      return user.save()
+    })
     .then(user => {
-      if (user) {
-        return Promise.resolve(req.flash('error', 'User Exists'))
-          .then(result => {
-            req.session.save(err => {
-              if (err) {
-                console.log(err)
-              }
-              res.redirect('/signup')
-            })
-          })
-          .catch(err => {
-            if (err) {
-              console.log(err)
-            }
-          })
+      // req.session.isLoggedIn = true
+      // req.session.user = user
+      const mailOptions = {
+        from: process.env.MAIL_ACCOUNT,
+        to: email,
+        subject: 'Registered to Node-Shop',
+        text: 'Welcome to Node-Shop',
+        html: `
+              <h1>Welcome to Node-Shop</h1>
+              <p>Please click this <a href="http://localhost:3000/login">link</a> to login with your credentials and start shopping at Node-Shop</p>
+            `
       }
-      return bcrypt.hash(password, 12)
-        .then(hashedPassword => {
-          const user = new User({
-            email: email,
-            password: hashedPassword,
-            cart: {
-              items: []
-            }
-          })
-          return user.save()
-        })
-        .then(user => {
-          req.session.isLoggedIn = true
-          req.session.user = user
-          const mailOptions = {
-            from: process.env.MAIL_ACCOUNT,
-            to: email,
-            subject: 'Registered to Node-Shop',
-            text: 'Welcome to Node-Shop',
-            html: '<h1>Welcome to Node-Shop</h1>'
-          }
-          transporter.sendMail(mailOptions)
-          res.redirect('/')
-        })
+      res.cookie("newMessage", 'You are registered, please check your email')
+      res.redirect('/confirm-signup')
+      return transporter.sendMail(mailOptions)
     })
     .catch(err => {
       if (err) {
         console.log(err)
       }
     })
+}
+
+exports.getConfirmSignup = (req, res, next) => {
+  const message = req.cookies.newMessage ? req.cookies.newMessage : null
+  res.clearCookie('newMessage')
+  res.render('auth/confirm-signup', {
+    pageTitle: 'Registered',
+    path: '/confirm-signup',
+    errorMessage: req.flash('error')[0],
+    successMessage: message
+  })
 }
 
 exports.postLogout = (req, res, next) => {

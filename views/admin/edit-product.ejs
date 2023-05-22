@@ -12,23 +12,47 @@
           method="POST">
           <div class="form-control">
             <label for="title">Title</label>
-            <input type="text" name="title" id="title"
-              value="<%= typeof product === 'undefined' ? '' : product ? product.title : '' %>" required>
+            <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>" type="text"
+              name="title" id="title" value="<%= product ? product.title : '' %>" required>
+            <% if (validationErrors.find(e=> e.path === 'title')) { %>
+              <% errorIndex=validationErrors.findIndex(e=> e.path === 'title') %>
+                <small class="form-invalid">
+                  <%= validationErrors[errorIndex].msg %>
+                </small>
+                <% } %>
           </div>
           <div class="form-control">
             <label for="imageUrl">Image URL</label>
-            <input type="text" name="imageUrl" id="imageUrl"
-              value="<%= typeof product === 'undefined' ? '' : product ? product.imageUrl : '' %>" required>
+            <input class="<%= validationErrors.find(e => e.path === 'imageUrl') ? 'invalid' : '' %>" type="text"
+              name="imageUrl" id="imageUrl" value="<%= product ? product.imageUrl : '' %>" required>
+            <% if (validationErrors.find(e=> e.path === 'imageUrl')) { %>
+              <% errorIndex=validationErrors.findIndex(e=> e.path === 'imageUrl') %>
+                <small class="form-invalid">
+                  <%= validationErrors[errorIndex].msg %>
+                </small>
+                <% } %>
           </div>
           <div class="form-control">
             <label for="price">Price</label>
-            <input type="number" name="price" id="price" min="1" step="0.01"
-              value="<%= typeof product === 'undefined' ? '' : product ? product.price : '' %>" required>
+            <input class="<%= validationErrors.find(e => e.path === 'price') ? 'invalid' : '' %>" type="number"
+              name="price" id="price" min="1" step="0.01" value="<%= product ? product.price : '' %>" required>
+            <% if (validationErrors.find(e=> e.path === 'price')) { %>
+              <% errorIndex=validationErrors.findIndex(e=> e.path === 'price') %>
+                <small class="form-invalid">
+                  <%= validationErrors[errorIndex].msg %>
+                </small>
+                <% } %>
           </div>
           <div class="form-control">
             <label for="description">Description</label>
-            <textarea rows="5" name="description" id="description"
-              required><%= typeof product === 'undefined' ? '' : product ? product.description : '' %></textarea>
+            <textarea class="<%= validationErrors.find(e => e.path === 'description') ? 'invalid' : '' %>" rows="5"
+              name="description" id="description" required><%= product ? product.description : '' %></textarea>
+            <% if (validationErrors.find(e=> e.path === 'description')) { %>
+              <% errorIndex=validationErrors.findIndex(e=> e.path === 'description') %>
+                <small class="form-invalid">
+                  <%= validationErrors[errorIndex].msg %>
+                </small>
+                <% } %>
           </div>
           <% if (editing) { %>
             <input type="hidden" name="productId" value="<%= product._id %>">

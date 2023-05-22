@@ -15,15 +15,40 @@
                         <form class="login-form" action="/signup" method="POST" novalidate>
                             <div class="form-control">
                                 <label for="email">E-Mail:</label>
-                                <input type="email" name="email" id="email" required>
+                                <input class="<%= validationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>"
+                                    type="email" name="email" id="email"
+                                    value="<%= lastInputValue? lastInputValue.email : '' %>" required>
+                                <% if (validationErrors.find(e=> e.path === 'email')) { %>
+                                    <% errorIndex=validationErrors.findIndex(e=> e.path === 'email') %>
+                                        <small class="form-invalid">
+                                            <%= validationErrors[errorIndex].msg %>
+                                        </small>
+                                        <% } %>
                             </div>
                             <div class="form-control">
                                 <label for="password">Password:</label>
-                                <input type="password" name="password" id="password" required>
+                                <input class="<%= validationErrors.find(e => e.path === 'password') ? 'invalid' : '' %>"
+                                    type="password" name="password" id="password"
+                                    value="<%= lastInputValue? lastInputValue.password : '' %>" required>
+                                <% if (validationErrors.find(e=> e.path === 'password')) { %>
+                                    <% errorIndex=validationErrors.findIndex(e=> e.path === 'password') %>
+                                        <small class="form-invalid">
+                                            <%= validationErrors[errorIndex].msg %>
+                                        </small>
+                                        <% } %>
                             </div>
                             <div class="form-control">
                                 <label for="confirmPassword">Confirm Password:</label>
-                                <input type="password" name="confirmPassword" id="confirmPassword" required>
+                                <input
+                                    class="<%= validationErrors.find(e => e.path === 'confirmPassword') ? 'invalid' : '' %>"
+                                    type="password" name="confirmPassword" id="confirmPassword"
+                                    value="<%= lastInputValue? lastInputValue.confirmPassword : '' %>" required>
+                                <% if (validationErrors.find(e=> e.path === 'confirmPassword')) { %>
+                                    <% errorIndex=validationErrors.findIndex(e=> e.path === 'confirmPassword') %>
+                                        <small class="form-invalid">
+                                            <%= validationErrors[errorIndex].msg %>
+                                        </small>
+                                        <% } %>
                             </div>
                             <input type="hidden" value="<%= csrfToken %>" name="_csrf">
                             <button class="btn" type="submit">Signup</button>

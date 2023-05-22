@@ -69,3 +69,13 @@ input::-webkit-inner-spin-button {
 .verify-email {
     text-align: center;
 }
+
+.form-control input.invalid,
+.form-control textarea.invalid {
+    border-color: red;
+}
+
+.form-control small.form-invalid {
+    color: red;
+    font-size: 0.7rem;
+}

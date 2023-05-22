@@ -11,14 +11,28 @@
             <%= errorMessage? errorMessage : successMessage %>
           </h3>
           <% } %>
-            <form class="login-form" action="/login" method="POST">
+            <form class="login-form" action="/login" method="POST" novalidate>
               <div class="form-control">
                 <label for="email">Email:</label>
-                <input type="email" id="email" name="email">
+                <input class="<%= validationErrors.find(e => e.path === 'email') ? 'invalid' : '' %>" type="email"
+                  id="email" name="email" value="<%= lastInputValue? lastInputValue.email : '' %>" required>
+                <% if (validationErrors.find(e=> e.path === 'email')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'email') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
               </div>
               <div class="form-control">
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password">
+                <input class="<%= validationErrors.find(e => e.path === 'password') ? 'invalid' : '' %>" type="password"
+                  id="password" name="password" value="<%= lastInputValue? lastInputValue.password : '' %>" required>
+                <% if (validationErrors.find(e=> e.path === 'password')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'password') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
               </div>
               <input type="hidden" value="<%= csrfToken %>" name="_csrf">
               <button class="btn" type="submit">
