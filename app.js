@@ -12,6 +12,7 @@ const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
 const authRoutes = require('./routes/auth')
 const notFoundRoutes = require('./routes/404')
+const errorRoutes = require('./routes/error')
 
 const User = require('./models/users')
 
@@ -45,13 +46,14 @@ app.use((req, res, next) => {
   }
   User.findById(req.session.user._id)
     .then(user => {
+      if (!user) {
+        return next()
+      }
       req.user = user
       next()
     })
     .catch(err => {
-      if (err) {
-        console.log(err)
-      }
+      next(new Error(err))
     })
 })
 
@@ -68,7 +70,13 @@ app.use(authRoutes)
 
 app.use(shopRoutes)
 
+app.use(errorRoutes)
+
 app.all('*', notFoundRoutes)
+
+app.use((error, req, res, next) => {
+  res.redirect('/500')
+})
 
 mongoose.connect(process.env.ATLAS_DB_CONN)
   .then(result => {

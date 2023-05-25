@@ -1,14 +1,15 @@
 const Product = require('../models/products')
 const { validationResult } = require('express-validator')
+const mongoose = require('mongoose')
 
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
     path: '/admin/add-product',
     editing: false,
-    successMessage: null,
     product: null,
-    validationErrors: []
+    validationErrors: [],
+    errorMessage: null
   })
 }
 
@@ -21,9 +22,9 @@ exports.postAddProduct = (req, res, next) => {
       pageTitle: 'Add Product',
       path: '/admin/add-product',
       editing: false,
-      successMessage: 'Product created successfully',
       product: { title, price, imageUrl, description },
-      validationErrors: errors.array()
+      validationErrors: errors.array(),
+      errorMessage: null
     })
   }
   const product = new Product({
@@ -39,8 +40,9 @@ exports.postAddProduct = (req, res, next) => {
       res.redirect('/admin/products')
     })
     .catch(err => {
-      console.error(err)
-      res.redirect('/admin/add-product')
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
     })
 }
 
@@ -55,7 +57,11 @@ exports.getAdminProducts = (req, res, next) => {
         errorMessage: req.flash('error')[0]
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.getEditProduct = (req, res, next) => {
@@ -90,12 +96,16 @@ exports.getEditProduct = (req, res, next) => {
         path: '/admin/edit-product',
         editing: editMode,
         product: product,
-        successMessage: null,
         lastInputValue: null,
-        validationErrors: []
+        validationErrors: [],
+        errorMessage: null
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.postEditProduct = (req, res, next) => {
@@ -108,9 +118,9 @@ exports.postEditProduct = (req, res, next) => {
       pageTitle: 'Edit Product',
       path: '/admin/edit-product',
       editing: true,
-      successMessage: 'Product created successfully',
       product: { _id: productId, title, price, imageUrl, description },
-      validationErrors: errors.array()
+      validationErrors: errors.array(),
+      errorMessage: null
     })
   }
   Product.findById(productId)

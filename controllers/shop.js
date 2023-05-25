@@ -10,7 +10,11 @@ exports.getIndex = (req, res, next) => {
         path: 'home'
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.getProducts = (req, res, next) => {
@@ -23,7 +27,11 @@ exports.getProducts = (req, res, next) => {
         path: '/products'
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.getProductDetails = (req, res, next) => {
@@ -36,7 +44,11 @@ exports.getProductDetails = (req, res, next) => {
         path: '/products'
       })
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.postCart = (req, res, next) => {
@@ -49,7 +61,9 @@ exports.postCart = (req, res, next) => {
       res.redirect('/cart')
     })
     .catch(err => {
-      console.log(err)
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
     })
 }
 
@@ -65,7 +79,11 @@ exports.getCart = (req, res, next) => {
           path: '/cart'
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
+      })
   } else {
     res.render('shop/cart', {
       products: [],
@@ -81,7 +99,11 @@ exports.postDeleteCartItem = (req, res, next) => {
     .then(result => {
       res.redirect('/cart')
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.postOrders = (req, res, next) => {
@@ -109,7 +131,11 @@ exports.postOrders = (req, res, next) => {
     .then(result => {
       res.redirect('/orders')
     })
-    .catch(err => console.log(err))
+    .catch(err => {
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
+    })
 }
 
 exports.getOrders = (req, res, next) => {
@@ -122,7 +148,11 @@ exports.getOrders = (req, res, next) => {
           orders: orders
         })
       })
-      .catch(err => console.log(err))
+      .catch(err => {
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
+      })
   } else {
     res.render('shop/orders', {
       pageTitle: 'Your Orders',

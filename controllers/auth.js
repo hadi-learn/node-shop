@@ -23,7 +23,6 @@ exports.postLogin = (req, res, next) => {
   const { email, password } = req.body
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
-    console.log(errors)
     return res.status(422).render('auth/login', {
       pageTitle: 'Login',
       path: '/login',
@@ -70,7 +69,9 @@ exports.postLogin = (req, res, next) => {
         })
     })
     .catch(err => {
-      console.log(err)
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
     })
 }
 
@@ -129,9 +130,9 @@ exports.postSignup = (req, res, next) => {
       return transporter.sendMail(mailOptions)
     })
     .catch(err => {
-      if (err) {
-        console.log(err)
-      }
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
     })
 }
 
@@ -167,7 +168,6 @@ exports.getReset = (req, res, next) => {
 exports.postReset = (req, res, next) => {
   crypto.randomBytes(32, (err, buffer) => {
     if (err) {
-      console.log(err)
       return Promise.resolve(req.flash('error', err))
         .then(result => {
           req.session.save(err => {
@@ -178,46 +178,30 @@ exports.postReset = (req, res, next) => {
           })
         })
         .catch(err => {
-          if (err) {
-            console.log(err)
-          }
+          const error = new Error(err)
+          error.httpStatusCode = 500
+          return next(error)
         })
     }
     const token = buffer.toString('hex')
-    let requestedUser
     User.findOne({ email: req.body.email })
       .then(user => {
         if (!user) {
-          return Promise.resolve(req.flash('error', 'Email not found. Please check your email address or register'))
-            .then(result => {
-              req.session.save(err => {
-                if (err) {
-                  console.log(err)
-                }
-                return res.redirect('/reset')
-              })
-            })
-            .catch(err => {
-              if (err) {
-                console.log(err)
-              }
-            })
+          req.flash('error', 'Email not found. Please check your email address or register')
+          return res.redirect('/reset')
         }
         user.resetToken = token
         user.resetTokenExpiration = Date.now() + 3600000
-        requestedUser = user
-      })
-      .then(result => {
-        return requestedUser.save()
+        return user.save()
           .then(result => {
             const mailOptions = {
               from: process.env.MAIL_ACCOUNT,
               to: req.body.email,
               subject: 'Password reset',
               html: `
-            <p>You Requested a password reset from Node-Shop.</p>
-            <p>Please click this <a href="http://localhost:3000/reset/${token}">link</a> to set up a new password</p>
-          `
+              <p>You Requested a password reset from Node-Shop.</p>
+              <p>Please click this <a href="http://localhost:3000/reset/${token}">link</a> to set up a new password</p>
+            `
             }
             transporter.sendMail(mailOptions)
             res.cookie("newMessage", 'Email verification sent')
@@ -225,9 +209,9 @@ exports.postReset = (req, res, next) => {
           })
       })
       .catch(err => {
-        if (err) {
-          console.log(err)
-        }
+        const error = new Error(err)
+        error.httpStatusCode = 500
+        return next(error)
       })
   })
 }
@@ -247,9 +231,9 @@ exports.getNewPasswordForm = (req, res, next) => {
             })
           })
           .catch(err => {
-            if (err) {
-              console.log(err)
-            }
+            const error = new Error(err)
+            error.httpStatusCode = 500
+            return next(error)
           })
       }
       res.render('auth/new-password', {
@@ -261,9 +245,9 @@ exports.getNewPasswordForm = (req, res, next) => {
       })
     })
     .catch(err => {
-      if (err) {
-        console.log(err)
-      }
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
     })
 }
 
@@ -311,8 +295,8 @@ exports.postNewPassword = (req, res, next) => {
       res.redirect('/login')
     })
     .catch(err => {
-      if (err) {
-        console.log(err)
-      }
+      const error = new Error(err)
+      error.httpStatusCode = 500
+      return next(error)
     })
 }

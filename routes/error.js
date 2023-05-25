@@ -3,7 +3,7 @@ const notFoundController = require('../controllers/notFound')
 
 const router = express.Router()
 
-router.route('*')
-  .get(notFoundController.get404)
+router.route('/500')
+  .get(notFoundController.get500)
 
 module.exports = router

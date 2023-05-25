@@ -79,3 +79,12 @@ input::-webkit-inner-spin-button {
     color: red;
     font-size: 0.7rem;
 }
+
+.checkbox-control {
+    display: flex;
+    margin-bottom: 15px;
+}
+
+.checkbox-control label {
+    margin-left: 10px;
+}

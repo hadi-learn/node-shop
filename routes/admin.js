@@ -25,7 +25,7 @@ router.route('/add-product')
       .isFloat()
       .withMessage('Invalid price format, only numbers are allowed'),
     body('description')
-      .isAlphanumeric('en-US', { ignore: ' -!?' })
+      .isAlphanumeric('en-US', { ignore: ' -!?:.\n' })
       .withMessage('Only alphabet a-zA-Z, numbers 0-9, space, and special character: -!?')
       .custom((value) => {
         if (value.length < 15) {
@@ -59,7 +59,7 @@ router.route('/edit-product/:productId')
       .isFloat()
       .withMessage('Invalid price format, only numbers are allowed'),
     body('description')
-      .isAlphanumeric('en-US', { ignore: ' -!?' })
+      .isAlphanumeric('en-US', { ignore: ' -!?:.\n' })
       .withMessage('Only alphabet a-zA-Z, numbers 0-9, space, and special character: -!?')
       .custom((value) => {
         if (value.length < 15) {

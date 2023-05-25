@@ -7,61 +7,73 @@
     <%- include('../includes/navigation.ejs') %>
 
       <main>
-        <form class="product-form"
-          action="<% if (editing) { %>/admin/edit-product/<%= product._id %><% } else { %>/admin/add-product<% } %>"
-          method="POST">
-          <div class="form-control">
-            <label for="title">Title</label>
-            <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>" type="text"
-              name="title" id="title" value="<%= product ? product.title : '' %>" required>
-            <% if (validationErrors.find(e=> e.path === 'title')) { %>
-              <% errorIndex=validationErrors.findIndex(e=> e.path === 'title') %>
-                <small class="form-invalid">
-                  <%= validationErrors[errorIndex].msg %>
-                </small>
+        <% if (errorMessage) { %>
+          <h3 class="user-message <%= errorMessage ? " user-message--error" : "" %>">
+            <%= errorMessage? errorMessage : '' %>
+          </h3>
+          <% } %>
+            <form class="product-form"
+              action="<% if (editing) { %>/admin/edit-product/<%= product._id %><% } else { %>/admin/add-product<% } %>"
+              method="POST">
+              <div class="form-control">
+                <label for="title">Title</label>
+                <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>" type="text"
+                  name="title" id="title" value="<%= product ? product.title : '' %>" required>
+                <% if (validationErrors.find(e=> e.path === 'title')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'title') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
+              </div>
+              <div class="form-control">
+                <label for="imageUrl">Image URL</label>
+                <input class="<%= validationErrors.find(e => e.path === 'imageUrl') ? 'invalid' : '' %>" type="text"
+                  name="imageUrl" id="imageUrl" value="<%= product ? product.imageUrl : '' %>" required>
+                <% if (validationErrors.find(e=> e.path === 'imageUrl')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'imageUrl') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
+              </div>
+              <div class="form-control">
+                <label for="price">Price</label>
+                <input class="<%= validationErrors.find(e => e.path === 'price') ? 'invalid' : '' %>" type="number"
+                  name="price" id="price" min="1" step="0.01" value="<%= product ? product.price : '' %>" required>
+                <% if (validationErrors.find(e=> e.path === 'price')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'price') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
+              </div>
+              <div class="form-control">
+                <label for="description">Description</label>
+                <textarea class="<%= validationErrors.find(e => e.path === 'description') ? 'invalid' : '' %>" rows="5"
+                  name="description" id="description" required><%= product ? product.description : '' %></textarea>
+                <% if (validationErrors.find(e=> e.path === 'description')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'description') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
+              </div>
+              <div class="checkbox-control">
+                <input type="checkbox" name="utama" id="utama">
+                <label for="utama">Tampilkan di halaman utama?</label>
+              </div>
+
+              <% if (editing) { %>
+
+                <input type="hidden" name="productId" value="<%= product._id %>">
                 <% } %>
-          </div>
-          <div class="form-control">
-            <label for="imageUrl">Image URL</label>
-            <input class="<%= validationErrors.find(e => e.path === 'imageUrl') ? 'invalid' : '' %>" type="text"
-              name="imageUrl" id="imageUrl" value="<%= product ? product.imageUrl : '' %>" required>
-            <% if (validationErrors.find(e=> e.path === 'imageUrl')) { %>
-              <% errorIndex=validationErrors.findIndex(e=> e.path === 'imageUrl') %>
-                <small class="form-invalid">
-                  <%= validationErrors[errorIndex].msg %>
-                </small>
-                <% } %>
-          </div>
-          <div class="form-control">
-            <label for="price">Price</label>
-            <input class="<%= validationErrors.find(e => e.path === 'price') ? 'invalid' : '' %>" type="number"
-              name="price" id="price" min="1" step="0.01" value="<%= product ? product.price : '' %>" required>
-            <% if (validationErrors.find(e=> e.path === 'price')) { %>
-              <% errorIndex=validationErrors.findIndex(e=> e.path === 'price') %>
-                <small class="form-invalid">
-                  <%= validationErrors[errorIndex].msg %>
-                </small>
-                <% } %>
-          </div>
-          <div class="form-control">
-            <label for="description">Description</label>
-            <textarea class="<%= validationErrors.find(e => e.path === 'description') ? 'invalid' : '' %>" rows="5"
-              name="description" id="description" required><%= product ? product.description : '' %></textarea>
-            <% if (validationErrors.find(e=> e.path === 'description')) { %>
-              <% errorIndex=validationErrors.findIndex(e=> e.path === 'description') %>
-                <small class="form-invalid">
-                  <%= validationErrors[errorIndex].msg %>
-                </small>
-                <% } %>
-          </div>
-          <% if (editing) { %>
-            <input type="hidden" name="productId" value="<%= product._id %>">
-            <% } %>
-              <input type="hidden" value="<%= csrfToken %>" name="_csrf">
-              <button class="btn" type="submit">
-                <%= editing ? 'Update Product' : 'Add Product' %>
-              </button>
-        </form>
+                  <input type="hidden" value="<%= csrfToken %>" name="_csrf">
+
+                  <button class="btn" type="submit">
+                    <%= editing ? 'Update Product' : 'Add Product' %>
+                  </button>
+            </form>
       </main>
 
       <%- include('../includes/end.ejs') %>
