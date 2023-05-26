@@ -18,9 +18,6 @@ router.route('/add-product')
       .isAlphanumeric('en-US', { ignore: ' -' })
       .isLength({ min: 3 })
       .trim(),
-    body('imageUrl')
-      .isURL()
-      .withMessage('Invalid URL format'),
     body('price')
       .isFloat()
       .withMessage('Invalid price format, only numbers are allowed'),
@@ -52,9 +49,6 @@ router.route('/edit-product/:productId')
       .isAlphanumeric('en-US', { ignore: ' -' })
       .isLength({ min: 3 })
       .trim(),
-    body('imageUrl')
-      .isURL()
-      .withMessage('Invalid URL format'),
     body('price')
       .isFloat()
       .withMessage('Invalid price format, only numbers are allowed'),

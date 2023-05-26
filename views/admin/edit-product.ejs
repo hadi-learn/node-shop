@@ -27,6 +27,16 @@
                     <% } %>
               </div>
               <div class="form-control">
+                <label for="image">Image URL</label>
+                <input type="file" name="image" id="image" required>
+                <% if (validationErrors.find(e=> e.path === 'imageUrl')) { %>
+                  <% errorIndex=validationErrors.findIndex(e=> e.path === 'imageUrl') %>
+                    <small class="form-invalid">
+                      <%= validationErrors[errorIndex].msg %>
+                    </small>
+                    <% } %>
+              </div>
+              <!-- <div class="form-control">
                 <label for="imageUrl">Image URL</label>
                 <input class="<%= validationErrors.find(e => e.path === 'imageUrl') ? 'invalid' : '' %>" type="text"
                   name="imageUrl" id="imageUrl" value="<%= product ? product.imageUrl : '' %>" required>
@@ -36,7 +46,7 @@
                       <%= validationErrors[errorIndex].msg %>
                     </small>
                     <% } %>
-              </div>
+              </div> -->
               <div class="form-control">
                 <label for="price">Price</label>
                 <input class="<%= validationErrors.find(e => e.path === 'price') ? 'invalid' : '' %>" type="number"

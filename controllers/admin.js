@@ -15,14 +15,14 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.postAddProduct = (req, res, next) => {
   const userId = req.user
-  const { title, price, imageUrl, description } = req.body
+  const { title, price, image, description } = req.body
   const errors = validationResult(req)
   if (!errors.isEmpty()) {
     return res.status(422).render('admin/edit-product', {
       pageTitle: 'Add Product',
       path: '/admin/add-product',
       editing: false,
-      product: { title, price, imageUrl, description },
+      product: { title, price, description },
       validationErrors: errors.array(),
       errorMessage: null
     })
@@ -30,7 +30,7 @@ exports.postAddProduct = (req, res, next) => {
   const product = new Product({
     title: title,
     price: price,
-    imageUrl: imageUrl,
+    image: image,
     description: description,
     userId: userId // or use userId: req.user, mongoose will do the rest
   })
