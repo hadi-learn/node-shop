@@ -7,6 +7,8 @@ const MongoDBStore = require('connect-mongodb-session')(session)
 const csrf = require('csurf')
 const flash = require('connect-flash')
 const cookieParser = require('cookie-parser')
+const multer = require('multer')
+const { v4: uuidv4 } = require('uuid')
 
 const adminRoutes = require('./routes/admin')
 const shopRoutes = require('./routes/shop')
@@ -25,11 +27,30 @@ const csrfProtection = csrf()
 
 console.log(process.env.NODE_ENV !== 'production' ? 'development' : 'production')
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, callback) => {
+    callback(null, 'images')
+  },
+  filename: (req, file, callback) => {
+    callback(null, uuidv4() + '-' + file.originalname)
+  }
+})
+
+const fileFilter = (req, file, callback) => {
+  if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+    callback(null, true)
+  } else {
+    callback(null, false)
+  }
+}
+
 app.set('view engine', 'ejs')
 app.set('views', 'views')
 
 app.use(express.urlencoded({ extended: true }))
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'))
 app.use(express.static(path.join(__dirname, 'public')))
+app.use(express.static(path.join(__dirname, 'images')))
 app.use(cookieParser())
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -75,6 +96,7 @@ app.use(errorRoutes)
 app.all('*', notFoundRoutes)
 
 app.use((error, req, res, next) => {
+  req.flash('error', error.message)
   res.redirect('/500')
 })
 

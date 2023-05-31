@@ -1,3 +1,7 @@
+const fs = require('fs')
+const path = require('path')
+const PDFDocument = require('pdfkit')
+
 const Product = require('../models/products')
 const Order = require('../models/orders')
 
@@ -160,6 +164,66 @@ exports.getOrders = (req, res, next) => {
       orders: []
     })
   }
+}
+
+exports.getInvoice = (req, res, next) => {
+  const { orderId } = req.params
+  Order.findById(orderId)
+    .then(order => {
+      if (!order) {
+        return next(new Error('Invalid Order'))
+      }
+      if (!order.user.userId.equals(req.user._id)) {
+        return next(new Error('Unauthorized'))
+      }
+      const invoiceName = 'invoice-' + orderId + '.pdf'
+      const invoicePath = path.join('data', 'invoices', invoiceName)
+
+      //////// USING SIMPLE PRELOAD METHODS BUT BAD FOR MEMORY
+      // fs.readFile(invoicePath, (err, data) => {
+      //   if (err) {
+      //     return next(err)
+      //   }
+      //   res.setHeader('Content-Type', 'application/pdf')
+      //   res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"')
+      //   res.send(data)
+      // })
+
+      //////// USING STREAM METHOD
+      // const file = fs.createReadStream(invoicePath)
+      // res.setHeader('Content-Type', 'application/pdf')
+      // res.setHeader('Content-Disposition', 'inline; filename="' + invoiceName + '"')
+      // file.pipe(res)
+
+      //////// USING THIRD PARTY FOR CREATING PDF ON THE FLY
+      const pdfDoc = new PDFDocument()
+      res.setHeader('Content-Type', 'application/pdf')
+      res.setHeader('Content-Disposition', `inline; filename="${invoiceName}"`)
+      pdfDoc.pipe(fs.createWriteStream(invoicePath))
+      pdfDoc.pipe(res)
+      pdfDoc.fontSize(26).text('Invoice', {
+        underline: false
+      })
+      pdfDoc.text('                                ', {
+        underline: true
+      })
+      pdfDoc.text('                                ')
+      let totalPrice = 0
+      order.products.forEach(product => {
+        totalPrice += product.quantity * product.productData.price
+        pdfDoc.fontSize(14).text(`${product.productData.title} - ${product.quantity}x${product.productData.price}`)
+      })
+      pdfDoc.text('                                ', {
+        underline: true
+      })
+      pdfDoc.text('                                ')
+      pdfDoc.fontSize(20).text(`Total Price: $${totalPrice.toFixed(2)}`)
+      pdfDoc.end()
+    })
+    .catch(err => {
+      return next(err)
+    })
+
 }
 
 exports.getCheckout = (req, res, next) => {

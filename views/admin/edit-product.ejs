@@ -14,7 +14,7 @@
           <% } %>
             <form class="product-form"
               action="<% if (editing) { %>/admin/edit-product/<%= product._id %><% } else { %>/admin/add-product<% } %>"
-              method="POST">
+              method="POST" enctype="multipart/form-data">
               <div class="form-control">
                 <label for="title">Title</label>
                 <input class="<%= validationErrors.find(e => e.path === 'title') ? 'invalid' : '' %>" type="text"
@@ -27,8 +27,8 @@
                     <% } %>
               </div>
               <div class="form-control">
-                <label for="image">Image URL</label>
-                <input type="file" name="image" id="image" required>
+                <label for="image">Select Image:</label>
+                <input type="file" name="image" id="image">
                 <% if (validationErrors.find(e=> e.path === 'imageUrl')) { %>
                   <% errorIndex=validationErrors.findIndex(e=> e.path === 'imageUrl') %>
                     <small class="form-invalid">
