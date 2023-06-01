@@ -241,8 +241,28 @@ main {
 }
 
 .edit:hover,
-.dit:active {
+.edit:active {
   background-color: #00695c;
+  color: white;
+}
+
+.pagination {
+  margin-top: 2rem;
+    text-align: center;
+}
+
+.pagination a {
+  text-decoration: none;
+  color: #F05B76;
+  padding: 0.5rem;
+  margin: 0 1rem;
+  border: 1px solid #F05B76;
+}
+
+.pagination a:hover,
+.pagination a:active,
+.pagination a.active {
+  background-color: #F05B76;
   color: white;
 }
 

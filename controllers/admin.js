@@ -3,6 +3,8 @@ const { validationResult } = require('express-validator')
 const Product = require('../models/products')
 const fileHelper = require('../util/file')
 
+const PRODUCTS_PER_PAGE = 1
+
 exports.getAddProduct = (req, res, next) => {
   res.render('admin/edit-product', {
     pageTitle: 'Add Product',
@@ -61,14 +63,29 @@ exports.postAddProduct = (req, res, next) => {
 }
 
 exports.getAdminProducts = (req, res, next) => {
-  Product.find({ userId: req.user._id })
-    .populate('userId')
+  const page = req.query.page ? +req.query.page : 1
+  // console.log(typeof page)
+  let totalProducts
+  Product.countDocuments({ userId: req.user._id })
+    .then(numberOfProducts => {
+      totalProducts = numberOfProducts
+      return Product.find({ userId: req.user._id })
+        .populate('userId')
+        .skip((page - 1) * PRODUCTS_PER_PAGE) // how many items to be skipped
+        .limit(PRODUCTS_PER_PAGE)
+    })
     .then(products => {
       res.render('admin/admin-product-list', {
         products: products,
         pageTitle: 'Admin Products',
         path: '/admin/products',
-        errorMessage: req.flash('error')[0]
+        errorMessage: req.flash('error')[0],
+        currentPage: page,
+        hasNextPage: PRODUCTS_PER_PAGE * page < totalProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalProducts / PRODUCTS_PER_PAGE)
       })
     })
     .catch(err => {
