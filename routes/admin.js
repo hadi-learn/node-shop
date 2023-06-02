@@ -67,10 +67,10 @@ router.route('/edit-product/:productId')
     isAuth, adminController.postEditProduct
   )
 
-router.route('/delete-product')
+router.route('/delete-product/:productId')
   .get((req, res, next) => {
     res.send('<h1>This is Delete Product Index!</h1>')
   })
-  .post(isAuth, adminController.postDeleteProduct)
+  .delete(isAuth, adminController.deleteProduct)
 
 module.exports = router
